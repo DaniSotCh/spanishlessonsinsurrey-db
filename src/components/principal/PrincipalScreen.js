@@ -7,6 +7,7 @@ import {
 import logoRedondo from '../../images/SLS - logo redondo.png';
 import ClientsScreen from '../maintenance/ClientsScreen';
 import ServicesScreen from '../maintenance/ServicesScreen';
+import SubMenu from 'antd/lib/menu/SubMenu';
 
 const { Sider } = Layout;
 
@@ -38,9 +39,10 @@ export default class PrincipalScreen extends React.Component {
                         <Menu.Item key="1" icon={<UsergroupAddOutlined />} onClick={this.menuClick.bind(this,1)}>
                             Clients
                         </Menu.Item>
-                        <Menu.Item key="2" icon={<SettingOutlined />} onClick={this.menuClick.bind(this,2)}>
-                            Maintenance
-                        </Menu.Item>
+                        <SubMenu key="sub1" icon={<SettingOutlined />} title="Maintenance">
+                            <Menu.Item key="2" onClick={this.menuClick.bind(this,2)}>Services</Menu.Item>
+                            <Menu.Item key="3" onClick={this.menuClick.bind(this,3)}>Levels</Menu.Item>
+                        </SubMenu>
                     </Menu>
                 </Sider>
                 <Layout className="site-layout">

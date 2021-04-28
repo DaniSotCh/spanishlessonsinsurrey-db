@@ -1,4 +1,5 @@
 @import '~antd/dist/antd.css';
+
 .App {
   text-align: center;
 }
@@ -33,18 +34,66 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
-.ant-layout-header{
-  background: #fff!important;
+.ant-layout-header {
+  background: #fff !important;
 }
 
-.w-50 {width: 50%;}
-.w-75 {width: 75%;}
+.w-50 {
+  width: 50%;
+}
 
-.logo{
+.w-75 {
+  width: 75%;
+}
+
+.logo {
   text-align: -webkit-center;
 }
+/* 
+html {
+  --antd-wave-shadow-color: #FD6B28
+}
+
+.ant-menu-vertical .ant-menu-item::after,
+.ant-menu-vertical-left .ant-menu-item::after,
+.ant-menu-vertical-right .ant-menu-item::after,
+.ant-menu-inline .ant-menu-item::after {
+  border-right: 3px solid #FD6B28
+}
+.ant-menu-submenu:hover > .ant-menu-submenu-title > .ant-menu-submenu-expand-icon, .ant-menu-submenu:hover > .ant-menu-submenu-title > .ant-menu-submenu-arrow{
+  color: #FD6B28
+}
+mark {
+  padding: 0.2em;
+}
+
+::selection {
+  background: #FD6B28
+}
+.ant-layout-sider {
+  --background:#B3A69F;
+  background: #FCD006;
+}
+
+.ant-menu-item:hover,
+.ant-menu-item-active,
+.ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
+.ant-menu-submenu-active,
+.ant-menu-submenu-title:hover {
+  color: #FD6B28
+}
+
+.ant-menu-submenu-selected {
+  color: rgba(0, 0, 0, 0.85)
+}
+
+.ant-menu-item-selected {
+  color: #FD6B28
+}
+ */

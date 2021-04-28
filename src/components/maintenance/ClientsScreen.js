@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { Layout, Space, Tag } from 'antd';
+import { Button, Layout, Space, Tag } from 'antd';
 import DynamicTable from '../../shared/DynamicTable';
 import ClientForm from './ClientForm';
+import { UserAddOutlined } from '@ant-design/icons';
 
 const { Header, Content } = Layout;
 const data = [
@@ -70,7 +71,8 @@ const data = [
 export default class ClientsScreen extends React.Component {
     state = {
         clientForm: false,
-        client: null
+        client: null,
+        keyClient: 1
     }
     handleRowClick = (obj) => {
         this.setState({ clientForm: true, client: obj })
@@ -81,11 +83,17 @@ export default class ClientsScreen extends React.Component {
     handleBackClick = () => {
         this.setState({ clientForm: false })
     }
+    NewClientClick = () => {
+        this.setState({ clientForm: true, client: null, keyClient: 0 })
+    }
     render() {
         let clientScreen = (<div>
             <Header className="site-layout-background">
                 Clients
-                            </Header>
+                <Button style={{ marginLeft: '5px' }} type="primary" icon={<UserAddOutlined />} size={'small'} onClick={this.NewClientClick}>
+                    New Client
+                </Button>
+            </Header>
             <Content
                 className="site-layout-background"
                 style={{
@@ -107,7 +115,7 @@ export default class ClientsScreen extends React.Component {
             </Content>
         </div>);
         if (this.state.clientForm) {
-            clientScreen = <ClientForm returnClick={this.handleBackClick} clientObj={this.state.client} />
+            clientScreen = <ClientForm returnClick={this.handleBackClick} clientObj={this.state.client} keyClient={this.state.keyClient} />
         }
 
         return clientScreen

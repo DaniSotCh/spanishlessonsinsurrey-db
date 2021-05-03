@@ -1,15 +1,18 @@
 import {
-    Form, Input, Button, DatePicker, InputNumber, TreeSelect, Row, Col,
+    Form, Input, Button, DatePicker, InputNumber, TreeSelect, Row, Col, Select, Space, PageHeader
 } from 'antd';
 import { Content, Header } from 'antd/lib/layout/layout';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import React from 'react';
-import { levelList } from '../../resources/PackageResource';
+import { levelList, servicesList } from '../../resources/PackageResource';
+import ServiceByClient from './ServiceByClient';
 
 const { TextArea } = Input;
+const { Option } = Select;
 export default class ClientForm extends React.Component {
+    formRef = React.createRef();
     state = {
-        serviceList: [],
+        serviceList: servicesList(),
         //Form Values
         clientName: '',
         clientEmail: '',
@@ -18,7 +21,9 @@ export default class ClientForm extends React.Component {
         levelValue: '',
         clientFound: '',
         clientComment: '',
-        clientAddress: ''
+        clientAddress: '',
+        servicesSelected: [],
+        dateSelected: []
     }
     componentDidMount() {
         if (this.props.clientObj != null) {
@@ -31,7 +36,18 @@ export default class ClientForm extends React.Component {
                 clientFound: this.props.clientObj.FOUND,
                 clientComment: this.props.clientObj.COMMENTS,
                 clientAddress: this.props.clientObj.ADDRESS,
-            })
+            }, () => {
+                this.formRef.current.setFieldsValue({
+                    clientName: this.props.clientObj.NAME,
+                    clientEmail: this.props.clientObj.EMAIL,
+                    telephone: this.props.clientObj.TELEPHONE,
+                    clientCity: this.props.clientObj.CITY,
+                    levelValue: this.props.clientObj.LEVEL,
+                    clientFound: this.props.clientObj.FOUND,
+                    clientComment: this.props.clientObj.COMMENTS,
+                    clientAddress: this.props.clientObj.ADDRESS,
+                })
+            });
         }
     }
     handleClientNameChange = (event) => {
@@ -58,13 +74,29 @@ export default class ClientForm extends React.Component {
     handleClientAddressChange = (event) => {
         this.setState({ clientAddress: event.target.value })
     }
+    handleServiceChange = (value, obj) => {
+        var helper = this.state.servicesSelected;
+
+        helper = helper.filter((c) => c.key !== parseInt(obj.key));
+        helper.push({ key: parseInt(obj.key), serviceName: value })
+
+        this.setState({ servicesSelected: helper })
+    }
+    handleServiceDateChange = (key, date, dateString) => {
+        var helper = this.state.dateSelected;
+
+        helper = helper.filter((c) => c.key !== key);
+        helper.push({ key: key, date: dateString })
+        
+        this.setState({ dateSelected: helper })
+    }
     SaveClick = () => {
         let clientObj = {
             KEY: this.state.KEY,
             NAME: this.state.clientName,
             TELEPHONE: this.state.telephone,
             EMAIL: this.state.clientEmail,
-            SERVICE: this.state.serviceList,
+            SERVICE: this.state.servicesSelected,
             LEVEL: this.state.levelValue,
             FOUND: this.state.clientFound,
             CITY: this.state.clientCity,
@@ -78,7 +110,7 @@ export default class ClientForm extends React.Component {
         this.props.returnClick();
     }
     clearData = () => {
-        this.setState({
+        this.formRef.current.setFieldsValue({
             serviceList: [],
             //Form Values
             clientName: '',
@@ -94,113 +126,180 @@ export default class ClientForm extends React.Component {
     render() {
         return (
             <div>
-                <Header className="site-layout-background">
-                    <ArrowLeftOutlined onClick={this.handleBack} style={{ marginRight: '5px' }} />
-                    {this.props.clientObj != null ? this.props.clientObj.NAME : 'New Client'}
-                </Header>
+                <PageHeader
+                    className="site-page-header site-layout-background"
+                    onBack={this.handleBack}
+                    title={this.props.clientObj != null ? this.props.clientObj.NAME : 'New Client'}
+                />
                 <Content
                     className="site-layout-background"
                     style={{
                         margin: '24px 16px',
                         padding: 24,
-                        minHeight: 670,
+                        //minHeight: 670,
                     }}
                 >
-                    <Form labelCol={{ span: 14 }} wrapperCol={{ span: 22 }} layout="vertical" initialValues={{ size: '10px' }} size={'middle'}>
+                    <Form ref={this.formRef} labelCol={{ span: 14 }} wrapperCol={{ span: 22 }} layout="vertical" initialValues={{ size: '10px' }} size={'middle'}>
                         <Row>
-                            <Col span={12}>
-                                <Form.Item
-                                    name="username"
-                                    label="Name"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Please input your name',
-                                        }
-                                    ]}>
-                                    <Input
-                                        defaultValue={this.props.clientObj != null ? this.props.clientObj.NAME : ''}
-                                        value={this.state.clientName}
-                                        onChange={this.handleClientNameChange}
-                                    />
-                                </Form.Item>
+                            <Col span={16}>
+                                <Row>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            name="clientName"
+                                            label="Name"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: 'Please input your name',
+                                                }
+                                            ]}>
+                                            <Input
+                                                //defaultValue={this.props.clientObj != null ? this.props.clientObj.NAME : ''}
+                                                value={this.state.clientName}
+                                                onChange={this.handleClientNameChange}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            name="clientEmail"
+                                            label="Email"
+                                            rules={[
+                                                {
+                                                    type: 'email',
+                                                },
+                                            ]}>
+                                            <Input
+                                                //defaultValue={this.props.clientObj != null ? this.props.clientObj.EMAIL : ''}
+                                                value={this.state.clientEmail}
+                                                onChange={this.handleClientEmailChange}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={12}>
+                                        <Form.Item
+                                            name="telephone"
+                                            label="Telephone"
+                                        >
+                                            <Input
+                                                //defaultValue={this.props.clientObj != null ? this.props.clientObj.TELEPHONE : ''}
+                                                value={this.state.telephone}
+                                                onChange={this.handleTelephoneChange}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item name="clientCity" label="City/Town">
+                                            <Input
+                                                value={this.state.clientCity}
+                                                onChange={this.handleClientCityChange}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={12}>
+                                        <Form.Item name="levelValue" label="Level">
+                                            <TreeSelect
+                                                placeholder="Select a level"
+                                                treeData={levelList()}
+                                                value={this.state.levelValue}
+                                                onChange={this.handleLevelChange}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item name="clientAddress" label="Address">
+                                            <Input
+                                                value={this.state.clientAddress}
+                                                onChange={this.handleClientAddressChange}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={12}>
+                                        <Form.Item name="clientComment" label="Comments">
+                                            <TextArea
+                                                value={this.state.clientComment}
+                                                onChange={this.handleClientCommentChange}
+                                                rows={4} />
+                                        </Form.Item>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Form.Item name="clientFound" label="How you found us">
+                                            <TextArea
+                                                value={this.state.clientFound}
+                                                onChange={this.handleClientFoundChange}
+                                                rows={4} />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                {/* <Row>
+                                    <Col span={12}>
+                                        <Form.List name="serviceList">
+                                            {(fields, { add, remove }) => (
+                                                <>
+                                                    {fields.map(field => (
+                                                        <Row>
+                                                            <Col span={12}>
+                                                                <Form.Item
+                                                                    noStyle
+                                                                    shouldUpdate={(prevValues, curValues) =>
+                                                                        prevValues.area !== curValues.area || prevValues.serviceList !== curValues.serviceList
+                                                                    }>
+                                                                    {() => (
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            label="Service"
+                                                                            name={[field.name, 'serviceList']}
+                                                                            fieldKey={[field.fieldKey, 'serviceList']}
+                                                                            rules={[{ required: true, message: 'Missing service' }]}
+                                                                        >
+                                                                            <Select
+                                                                                //disabled={!this.formRef.current.getFieldValue('area')}
+                                                                                //style={{ width: 130 }}
+                                                                                placeholder="Select a service"
+                                                                                onChange={this.handleServiceChange}>
+                                                                                {(this.state.serviceList).map(item => (
+                                                                                    <Option key={field.key} value={item.value}>
+                                                                                        {item.value}
+                                                                                    </Option>
+                                                                                ))}
+                                                                            </Select>
+                                                                        </Form.Item>
+                                                                    )}
+                                                                </Form.Item>
+                                                            </Col>
+                                                            <Col span={12}>
+                                                                <Form.Item
+                                                                    {...field}
+                                                                    label="Date"
+                                                                    name={[field.name, 'date']}
+                                                                    fieldKey={[field.fieldKey, 'date']}
+                                                                    rules={[{ required: true, message: 'Missing date' }]}
+                                                                >
+                                                                    <DatePicker className="w-75" onChange={this.handleServiceDateChange.bind(this, field.key)} />
+                                                                    <MinusCircleOutlined style={{ marginLeft: '5px', marginRight: '5px' }} onClick={() => remove(field.name)} />
+                                                                </Form.Item>
+                                                            </Col>
+                                                        </Row>
+                                                    ))}
+                                                    <Form.Item>
+                                                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                                                            Add a Service
+                                                </Button>
+                                                    </Form.Item>
+                                                </>
+                                            )}
+                                        </Form.List>
+                                    </Col>
+                                </Row> */}
                             </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    name={['user', 'email']}
-                                    label="Email"
-                                    rules={[
-                                        {
-                                            type: 'email',
-                                        },
-                                    ]}>
-                                    <Input
-                                        defaultValue={this.props.clientObj != null ? this.props.clientObj.EMAIL : ''}
-                                        value={this.state.clientEmail}
-                                        onChange={this.handleClientEmailChange}
-                                    />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={12}>
-                                <Form.Item
-                                    name="phone"
-                                    label="Telephone"
-                                >
-                                    <Input
-                                        defaultValue={this.props.clientObj != null ? this.props.clientObj.TELEPHONE : ''}
-                                        value={this.state.telephone}
-                                        onChange={this.handleTelephoneChange}
-                                    />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item label="City/Town">
-                                    <Input
-                                        value={this.state.clientCity}
-                                        onChange={this.handleClientCityChange}
-                                    />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={12}>
-                                <Form.Item label="Level">
-                                    <TreeSelect
-                                        placeholder="Select a level"
-                                        treeData={levelList()}
-                                        value={this.state.levelValue}
-                                        onChange={this.handleLevelChange}
-                                    />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item label="Address">
-                                    <Input
-                                        value={this.state.clientAddress}
-                                        onChange={this.handleClientAddressChange}
-                                    />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={12}>
-                                <Form.Item label="Comments">
-                                    <TextArea
-                                        value={this.state.clientComment}
-                                        onChange={this.handleClientCommentChange}
-                                        rows={4} />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item label="How you found us">
-                                    <TextArea
-                                        value={this.state.clientFound}
-                                        onChange={this.handleClientFoundChange}
-                                        rows={4} />
-                                </Form.Item>
-                            </Col>
+
+                            <ServiceByClient clientName={this.props.clientObj != null ? this.props.clientObj.NAME : ''} />
                         </Row>
                         {/* <Form.Item label="DatePicker">
                             <DatePicker />
@@ -213,8 +312,8 @@ export default class ClientForm extends React.Component {
                         </Form.Item> */}
                         <Form.Item label="">
                             <Button
-                            type="primary"
-                            size={'large'}
+                                type="primary"
+                                size={'large'}
                                 onClick={this.SaveClick}>
                                 Save
                                 </Button>

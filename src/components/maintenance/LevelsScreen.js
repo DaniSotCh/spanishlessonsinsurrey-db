@@ -7,49 +7,49 @@ const { Header, Content } = Layout;
 const data = [
     {
         key: 1,
-        Name: 'CLIENT NOW',
+        Name: 'Beginners'
     },
     {
         key: 2,
-        Name: 'CLIENT PAST',
+        Name: 'Beginners II'
     },
     {
         key: 3,
-        Name: 'CLUB MEMBER',
+        Name: 'Beginners III'
     },
     {
         key: 4,
-        Name: 'CLUB VISITOR'
+        Name: 'GCSE'
     },
     {
         key: 5,
-        Name: 'GROUPS'
+        Name: 'Pre Intermediate'
     },
     {
         key: 6,
-        Name: 'PRIVATE EXPRESS'
+        Name: 'Intermediate'
     },
     {
         key: 7,
-        Name: 'PRIVATE BLOCK'
+        Name: 'Upper Intermediate'
     },
     {
         key: 8,
-        Name: 'PRIVATE GCSE'
+        Name: 'Advanced - Alevel'
     },
     {
         key: 9,
-        Name: 'PRIVATE ALEVEL'
-    },
+        Name: 'Proffesional'
+    }
 ];
-export default class ServicesScreen extends React.Component {
+export default class LevelsScreen extends React.Component {
     formRef = React.createRef();
     state = {
-        keyService: 0,
-        serviceName: ''
+        keyLevel: 0,
+        levelName: ''
     }
     handleRowClick = (obj) => {
-        this.formRef.current.setFieldsValue({ serviceName: obj.Name })
+        this.formRef.current.setFieldsValue({ levelName: obj.Name })
     }
     handleDeleteClick = (obj) => {
         console.log(obj)
@@ -60,27 +60,27 @@ export default class ServicesScreen extends React.Component {
     NewClientClick = () => {
         this.setState({ clientForm: true, client: null, keyClient: 0 })
     }
-    handleServiceNameChange = (event) => {
-        this.setState({ serviceName: event.target.value });
+    handleLevelNameChange = (event) => {
+        this.setState({ levelName: event.target.value });
     }
     SaveClick = () => {
 
     }
     ClearClick = () => {
-        this.formRef.current.setFieldsValue({ serviceName: ' ' })
+        this.formRef.current.setFieldsValue({ levelName: ' ' })
     }
     render() {
-        let clientScreen = (<div>
+        let clientScreen = (<div>            
             <PageHeader
                 className="site-page-header"
-                title="Services"
+                title="Levels"
             />
             <Content
                 className="site-layout-background"
                 style={{
                     margin: '24px 16px',
                     padding: 24,
-                    //minHeight: '670',
+                    //minHeight: 670,
                 }}
             >
 
@@ -88,17 +88,17 @@ export default class ServicesScreen extends React.Component {
                     <Row align="bottom">
                         <Col span={12}>
                             <Form.Item
-                                name="serviceName"
-                                label="Service Name"
+                                name="levelName"
+                                label="Level Name"
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Please input a service name',
+                                        message: 'Please input a level name',
                                     }
                                 ]}>
                                 <Input
-                                    value={this.state.serviceName}
-                                    onChange={this.handleServiceNameChange}
+                                    value={this.state.levelName}
+                                    onChange={this.handleLevelNameChange}
                                 />
                             </Form.Item>
                         </Col>

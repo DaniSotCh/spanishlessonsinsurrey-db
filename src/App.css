@@ -44,6 +44,11 @@
   background: #fff !important;
 }
 
+.ant-btn-primary {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 .w-50 {
   width: 50%;
 }
@@ -55,7 +60,96 @@
 .logo {
   text-align: -webkit-center;
 }
-/* 
+
+.ant-layout-sider {
+  background: #fff;
+  border-right: 1px solid #e2e2e2;
+  /* border-right: 1px solid #727272; */
+}
+
+.ant-layout-sider-trigger {
+  /* background: #F84F17; */
+  background: #FD6B28;
+}
+
+.ant-menu-item:hover,
+.ant-menu-item-active,
+.ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
+.ant-menu-submenu-active,
+.ant-menu-submenu-title:hover {
+  color: #FD6B28;
+}
+
+.ant-page-header-back-button:focus,
+.ant-page-header-back-button:hover {
+  color: #FD6B28;
+}
+
+.ant-menu-vertical .ant-menu-submenu-selected,
+.ant-menu-vertical-left .ant-menu-submenu-selected,
+.ant-menu-vertical-right .ant-menu-submenu-selected {
+  color: #FD6B28;
+}
+
+.ant-menu-submenu-selected {
+  color: #727272;
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+  color: #fff;
+  background: #FD6B28;
+}
+
+.ant-btn-primary {
+  border-color: #FD6B28;
+  background: #FD6B28;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  border-color: #fb7b3f;
+  background: #fb7b3f;
+}
+
+.ant-menu-submenu:hover>.ant-menu-submenu-title>.ant-menu-submenu-expand-icon,
+.ant-menu-submenu:hover>.ant-menu-submenu-title>.ant-menu-submenu-arrow {
+  color: #FD6B28;
+}
+
+.ant-menu-vertical .ant-menu-item::after,
+.ant-menu-vertical-left .ant-menu-item::after,
+.ant-menu-vertical-right .ant-menu-item::after,
+.ant-menu-inline .ant-menu-item::after {
+  border-right: 3px solid #FD6B28
+}
+
+.ant-menu-inline,
+.ant-menu-vertical,
+.ant-menu-vertical-left {
+  border-top: 1px solid #e2e2e2;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.ant-form-vertical .ant-form-item-label,
+.ant-col-24.ant-form-item-label,
+.ant-col-xl-24.ant-form-item-label {
+  padding: 0px;
+}
+
+.ant-list-split .ant-list-header {
+  border-bottom: 1px solid #e2e2e2;
+}
+
+.ant-list-bordered.ant-list-lg .ant-list-header,
+.ant-list-bordered.ant-list-lg .ant-list-footer {
+  background: #fafafa;
+}
+
+.ant-list-items {
+  background: #fff;
+}
+
+  /* 
 html {
   --antd-wave-shadow-color: #FD6B28
 }
@@ -75,10 +169,6 @@ mark {
 
 ::selection {
   background: #FD6B28
-}
-.ant-layout-sider {
-  --background:#B3A69F;
-  background: #FCD006;
 }
 
 .ant-menu-item:hover,

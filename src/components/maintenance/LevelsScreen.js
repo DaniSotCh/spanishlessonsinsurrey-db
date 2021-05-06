@@ -1,58 +1,39 @@
 import React from 'react';
 
-import { Button, Input, Layout, Form, Row, Col,PageHeader } from 'antd';
+import { Button, Input, Layout, Form, Row, Col, PageHeader } from 'antd';
 import DynamicTable from '../../shared/DynamicTable';
+import { deleteLevelByID, getLevels, saveLevel, updateLevel } from '../../networking/NetworkingLevel';
 
 const { Header, Content } = Layout;
-const data = [
-    {
-        key: 1,
-        Name: 'Beginners'
-    },
-    {
-        key: 2,
-        Name: 'Beginners II'
-    },
-    {
-        key: 3,
-        Name: 'Beginners III'
-    },
-    {
-        key: 4,
-        Name: 'GCSE'
-    },
-    {
-        key: 5,
-        Name: 'Pre Intermediate'
-    },
-    {
-        key: 6,
-        Name: 'Intermediate'
-    },
-    {
-        key: 7,
-        Name: 'Upper Intermediate'
-    },
-    {
-        key: 8,
-        Name: 'Advanced - Alevel'
-    },
-    {
-        key: 9,
-        Name: 'Proffesional'
-    }
-];
 export default class LevelsScreen extends React.Component {
     formRef = React.createRef();
     state = {
         keyLevel: 0,
-        levelName: ''
+        levelName: '',
+        levels: []
+    }
+    componentDidMount() {
+        this.getLevels();
     }
     handleRowClick = (obj) => {
-        this.formRef.current.setFieldsValue({ levelName: obj.Name })
+        this.formRef.current.setFieldsValue({ keyLevel: obj.key, levelName: obj.Name });
+        this.setState({
+            keyLevel: obj.key,
+            levelName: obj.Name
+        });
     }
     handleDeleteClick = (obj) => {
-        console.log(obj)
+        if (obj.key > 0) {
+            deleteLevelByID(obj.key).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        console.log("ERROR")
+                    } else {
+                        this.getLevels();
+                    }
+                }
+            )
+        }
     }
     handleBackClick = () => {
         this.setState({ clientForm: false })
@@ -63,14 +44,60 @@ export default class LevelsScreen extends React.Component {
     handleLevelNameChange = (event) => {
         this.setState({ levelName: event.target.value });
     }
-    SaveClick = () => {
-
+    getLevels = () => {
+        getLevels().then(
+            (json) => {
+                if (json != null) {
+                    let helper = [];
+                    json.forEach(element => {
+                        helper.push({
+                            key: element.id,
+                            Name: element.name
+                        })
+                    });
+                    this.setState({ levels: helper })
+                }
+            }
+        )
     }
+    SaveClick = () => {
+        let model = {
+            "Name": this.state.levelName
+        }
+        if (this.state.keyLevel > 0) {
+            updateLevel(this.state.keyLevel, model).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        console.log("ERROR")
+                    } else {
+                        this.getLevels();
+                        this.ClearClick();
+                    }
+                }
+            )
+        } else {
+            saveLevel(model).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        console.log("ERROR")
+                    } else {
+                        this.getLevels();
+                        this.ClearClick();
+                    }
+                }
+            )
+        }
+    }
+
     ClearClick = () => {
-        this.formRef.current.setFieldsValue({ levelName: ' ' })
+        this.formRef.current.setFieldsValue({ keyLevel: 0, levelName: ' ' });
+        this.setState({
+            keyLevel: 0,
+            levelName: ''
+        });
     }
     render() {
-        let clientScreen = (<div>            
+        let clientScreen = (<div>
             <PageHeader
                 className="site-page-header"
                 title="Levels"
@@ -126,7 +153,7 @@ export default class LevelsScreen extends React.Component {
                 <DynamicTable
                     id="clients-table"
                     hiddenHeaders={['key']}
-                    data={data}
+                    data={this.state.levels}
                     enableClick={true}
                     useCheckBox={false}
                     useDeleteButton={true}

@@ -2,57 +2,35 @@ import React from 'react';
 
 import { Button, Input, Layout, Form, Row, Col,PageHeader } from 'antd';
 import DynamicTable from '../../shared/DynamicTable';
+import { deleteServiceByID, getServices, saveService, updateService } from '../../networking/NetworkingService';
 
 const { Header, Content } = Layout;
-const data = [
-    {
-        key: 1,
-        Name: 'CLIENT NOW',
-    },
-    {
-        key: 2,
-        Name: 'CLIENT PAST',
-    },
-    {
-        key: 3,
-        Name: 'CLUB MEMBER',
-    },
-    {
-        key: 4,
-        Name: 'CLUB VISITOR'
-    },
-    {
-        key: 5,
-        Name: 'GROUPS'
-    },
-    {
-        key: 6,
-        Name: 'PRIVATE EXPRESS'
-    },
-    {
-        key: 7,
-        Name: 'PRIVATE BLOCK'
-    },
-    {
-        key: 8,
-        Name: 'PRIVATE GCSE'
-    },
-    {
-        key: 9,
-        Name: 'PRIVATE ALEVEL'
-    },
-];
 export default class ServicesScreen extends React.Component {
     formRef = React.createRef();
     state = {
         keyService: 0,
-        serviceName: ''
+        serviceName: '',
+        services:[]
+    }
+    componentDidMount(){
+        this.getServices();
     }
     handleRowClick = (obj) => {
-        this.formRef.current.setFieldsValue({ serviceName: obj.Name })
+        this.formRef.current.setFieldsValue({ keyService: obj.key, serviceName: obj.Name })
+        this.setState({ keyService: obj.key, serviceName: obj.Name })
     }
     handleDeleteClick = (obj) => {
-        console.log(obj)
+        if (obj.key > 0) {
+            deleteServiceByID(obj.key).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        console.log("ERROR")
+                    } else {
+                        this.getServices();
+                    }
+                }
+            )
+        }
     }
     handleBackClick = () => {
         this.setState({ clientForm: false })
@@ -63,11 +41,53 @@ export default class ServicesScreen extends React.Component {
     handleServiceNameChange = (event) => {
         this.setState({ serviceName: event.target.value });
     }
+    getServices = ()=>{
+        getServices().then(
+            (json) => {
+                if (json != null) {
+                    let helper = [];
+                    json.forEach(element => {
+                        helper.push({
+                            key: element.id,
+                            Name: element.name
+                        })
+                    });
+                    this.setState({ services: helper })
+                }
+            }
+        )
+    }
     SaveClick = () => {
-
+        let model = {
+            "Name": this.state.serviceName
+        }
+        if (this.state.keyService > 0) {
+            updateService(this.state.keyService, model).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        console.log("ERROR")
+                    } else {
+                        this.getServices();
+                        this.ClearClick();
+                    }
+                }
+            )
+        } else {
+            saveService(model).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        console.log("ERROR")
+                    } else {
+                        this.getServices();
+                        this.ClearClick();
+                    }
+                }
+            )
+        }
     }
     ClearClick = () => {
-        this.formRef.current.setFieldsValue({ serviceName: ' ' })
+        this.formRef.current.setFieldsValue({ keyService: 0, serviceName: ' ' })
+        this.setState({ keyService: 0, serviceName: 0 })
     }
     render() {
         let clientScreen = (<div>
@@ -126,7 +146,7 @@ export default class ServicesScreen extends React.Component {
                 <DynamicTable
                     id="clients-table"
                     hiddenHeaders={['key']}
-                    data={data}
+                    data={this.state.services}
                     enableClick={true}
                     useCheckBox={false}
                     useDeleteButton={true}

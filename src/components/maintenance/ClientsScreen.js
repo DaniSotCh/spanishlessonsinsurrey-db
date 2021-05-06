@@ -5,14 +5,42 @@ import DynamicTable from '../../shared/DynamicTable';
 import ClientForm from './ClientForm';
 import { UserAddOutlined } from '@ant-design/icons';
 import { clientsList } from '../../resources/PackageResource';
+import { getServices } from '../../networking/NetworkingService';
+import { getClients } from '../../networking/NetworkingClient';
 
 const { Header, Content } = Layout;
-const data = clientsList();
 export default class ClientsScreen extends React.Component {
     state = {
         clientForm: false,
         client: null,
-        keyClient: 1
+        keyClient: 1,
+        clientsList:[]
+    }
+    componentDidMount() {
+        getClients().then(
+            (jsonResponse) => {
+                if (jsonResponse != null) {
+                    let helper = [];
+                    //level: {clients: [],id: 1,name: "Beginners"}
+                    jsonResponse.forEach(element => {
+                        helper.push({
+                            KEY: element.id,
+                            NAME: element.name,
+                            TELEPHONE: element.telephone,
+                            EMAIL: element.email,
+                            SERVICE: element.services,
+                            LEVELID: element.levelId,
+                            LEVEL:element.level.name,
+                            FOUND: element.found,
+                            CITY: element.city,
+                            ADDRESS: element.address,
+                            COMMENTS: element.comments,
+                        })
+                    });
+                    this.setState({ clientsList: helper })
+                }
+            }
+        )
     }
     handleRowClick = (obj) => {
         this.setState({ clientForm: true, client: obj })
@@ -47,8 +75,8 @@ export default class ClientsScreen extends React.Component {
             >
                 <DynamicTable
                     id="clients-table"
-                    hiddenHeaders={['KEY', 'TELEPHONE', 'FOUND', 'CITY', 'ADDRESS', 'COMMENTS']}
-                    data={data}
+                    hiddenHeaders={['KEY','LEVELID', 'TELEPHONE', 'FOUND', 'CITY', 'ADDRESS', 'COMMENTS']}
+                    data={this.state.clientsList}
                     enableClick={true}
                     useCheckBox={false}
                     useDeleteButton={true}

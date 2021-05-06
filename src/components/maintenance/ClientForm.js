@@ -6,6 +6,9 @@ import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-desig
 import React from 'react';
 import { levelList, servicesList } from '../../resources/PackageResource';
 import ServiceByClient from './ServiceByClient';
+import { getLevels } from '../../networking/NetworkingLevel';
+import { getServices } from '../../networking/NetworkingService';
+import { saveClient, updateClient } from '../../networking/NetworkingClient';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -14,6 +17,7 @@ export default class ClientForm extends React.Component {
     state = {
         serviceList: servicesList(),
         //Form Values
+        clientKey:0,
         clientName: '',
         clientEmail: '',
         telephone: '',
@@ -23,32 +27,70 @@ export default class ClientForm extends React.Component {
         clientComment: '',
         clientAddress: '',
         servicesSelected: [],
-        dateSelected: []
+        dateSelected: [],
+        servicesList:[],
+        levelsList:[]
     }
     componentDidMount() {
+        this.getServices();
+        this.getLevels();
         if (this.props.clientObj != null) {
             this.setState({
+                clientKey:this.props.clientObj.KEY,
                 clientName: this.props.clientObj.NAME,
                 clientEmail: this.props.clientObj.EMAIL,
                 telephone: this.props.clientObj.TELEPHONE,
                 clientCity: this.props.clientObj.CITY,
-                levelValue: this.props.clientObj.LEVEL,
+                levelValue: this.props.clientObj.LEVELID,
                 clientFound: this.props.clientObj.FOUND,
                 clientComment: this.props.clientObj.COMMENTS,
                 clientAddress: this.props.clientObj.ADDRESS,
-            }, () => {
-                this.formRef.current.setFieldsValue({
-                    clientName: this.props.clientObj.NAME,
-                    clientEmail: this.props.clientObj.EMAIL,
-                    telephone: this.props.clientObj.TELEPHONE,
-                    clientCity: this.props.clientObj.CITY,
-                    levelValue: this.props.clientObj.LEVEL,
-                    clientFound: this.props.clientObj.FOUND,
-                    clientComment: this.props.clientObj.COMMENTS,
-                    clientAddress: this.props.clientObj.ADDRESS,
-                })
             });
+            this.formRef.current.setFieldsValue({
+                clientKey:this.props.clientObj.KEY,
+                clientName: this.props.clientObj.NAME,
+                clientEmail: this.props.clientObj.EMAIL,
+                telephone: this.props.clientObj.TELEPHONE,
+                clientCity: this.props.clientObj.CITY,
+                levelValue: this.props.clientObj.LEVELID,
+                clientFound: this.props.clientObj.FOUND,
+                clientComment: this.props.clientObj.COMMENTS,
+                clientAddress: this.props.clientObj.ADDRESS,
+            })
         }
+    }
+    
+    getServices = ()=>{
+        getServices().then(
+            (json) => {
+                if (json != null) {
+                    let helper = [];
+                    json.forEach(element => {
+                        helper.push({
+                            value: element.id,
+                            title: element.name
+                        })
+                    });
+                    this.setState({ servicesList: helper })
+                }
+            }
+        )
+    }
+    getLevels = () => {
+        getLevels().then(
+            (json) => {
+                if (json != null) {
+                    let helper = [];
+                    json.forEach(element => {
+                        helper.push({
+                            value: element.id,
+                            title: element.name
+                        })
+                    });
+                    this.setState({ levelsList: helper })
+                }
+            }
+        )
     }
     handleClientNameChange = (event) => {
         this.setState({ clientName: event.target.value })
@@ -91,19 +133,40 @@ export default class ClientForm extends React.Component {
         this.setState({ dateSelected: helper })
     }
     SaveClick = () => {
-        let clientObj = {
-            KEY: this.state.KEY,
-            NAME: this.state.clientName,
-            TELEPHONE: this.state.telephone,
-            EMAIL: this.state.clientEmail,
-            SERVICE: this.state.servicesSelected,
-            LEVEL: this.state.levelValue,
-            FOUND: this.state.clientFound,
-            CITY: this.state.clientCity,
-            ADDRESS: this.state.clientAddress,
-            COMMENTS: this.state.clientComment,
+        let model = {
+            Name: this.state.clientName,
+            Telephone: this.state.telephone,
+            Email: this.state.clientEmail,
+            Services: [],
+            LevelId: this.state.levelValue,
+            Found: this.state.clientFound,
+            City: this.state.clientCity,
+            Address: this.state.clientAddress,
+            Comments: this.state.clientComment,
         }
-        debugger
+        if (this.state.clientKey > 0) {
+            updateClient(this.state.clientKey, model).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        console.log("ERROR")
+                    } else {
+                        this.getLevels();
+                        this.clearData();
+                    }
+                }
+            )
+        } else {
+            saveClient(model).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        console.log("ERROR")
+                    } else {
+                        this.getLevels();
+                        this.clearData();
+                    }
+                }
+            )
+        }
     }
     handleBack = () => {
         this.clearData();
@@ -113,6 +176,20 @@ export default class ClientForm extends React.Component {
         this.formRef.current.setFieldsValue({
             serviceList: [],
             //Form Values
+            clientKey: 0,
+            clientName: '',
+            clientEmail: '',
+            telephone: '',
+            clientCity: '',
+            levelValue: '',
+            clientFound: '',
+            clientComment: '',
+            clientAddress: ''
+        });
+        this.setState({
+            serviceList: [],
+            //Form Values
+            clientKey: 0,
             clientName: '',
             clientEmail: '',
             telephone: '',
@@ -204,7 +281,7 @@ export default class ClientForm extends React.Component {
                                         <Form.Item name="levelValue" label="Level">
                                             <TreeSelect
                                                 placeholder="Select a level"
-                                                treeData={levelList()}
+                                                treeData={this.state.levelsList}
                                                 value={this.state.levelValue}
                                                 onChange={this.handleLevelChange}
                                             />

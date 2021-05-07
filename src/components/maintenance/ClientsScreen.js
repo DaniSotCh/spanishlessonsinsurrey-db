@@ -1,14 +1,13 @@
 import React from 'react';
 
-import { Button, Layout, PageHeader } from 'antd';
+import { Button, Layout, PageHeader,Modal } from 'antd';
 import DynamicTable from '../../shared/DynamicTable';
 import ClientForm from './ClientForm';
 import { UserAddOutlined } from '@ant-design/icons';
-import { clientsList } from '../../resources/PackageResource';
-import { getServices } from '../../networking/NetworkingService';
 import { getClients } from '../../networking/NetworkingClient';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
+let objClient = null;
 export default class ClientsScreen extends React.Component {
     state = {
         clientForm: false,
@@ -46,13 +45,33 @@ export default class ClientsScreen extends React.Component {
         this.setState({ clientForm: true, client: obj })
     }
     handleDeleteClick = (obj) => {
-        console.log(obj)
+        objClient = obj
+        this.setState({ showDeleteAlert: true })
     }
     handleBackClick = () => {
         this.setState({ clientForm: false })
     }
     NewClientClick = () => {
         this.setState({ clientForm: true, client: null, keyClient: 0 })
+    }
+    yesDelete = () => {
+        if (objClient != null && objClient.key > 0) {
+            /* deleteServiceByID(objService.key).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        this.setState({ content: 'An error ocurred while delete a service. Please, try again.' })
+                        this.error()
+                    } else {
+                        this.setState({ content: 'The service have been deleted',showDeleteAlert: false })
+                        this.getServices();
+                        this.success();
+                    }
+                }
+            ) */
+        }
+    }
+    closeDeleteAlert = () => {
+        this.setState({ showDeleteAlert: false })
     }
     render() {
         let clientScreen = (<div>
@@ -84,6 +103,15 @@ export default class ClientsScreen extends React.Component {
                     clickFunction={this.handleRowClick.bind(this)}
                 />
             </Content>
+            {/*----------FOR DELETE-----------*/}
+            <Modal
+                title="Are you sure you want to delete this client?"
+                visible={this.state.showDeleteAlert}
+                onOk={this.yesDelete}
+                onCancel={this.closeDeleteAlert}
+                okText="Yes"
+                cancelText="No"
+            ><p>This action can not be undone.</p></Modal>
         </div>);
         if (this.state.clientForm) {
             clientScreen = <ClientForm returnClick={this.handleBackClick} clientObj={this.state.client} keyClient={this.state.keyClient} />

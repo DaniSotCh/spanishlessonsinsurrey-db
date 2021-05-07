@@ -1,8 +1,7 @@
 import {
-    Form, Input, Button, DatePicker, InputNumber, TreeSelect, Row, Col, Select, Space, PageHeader
+    Form, Input, Button, TreeSelect, Row, Col, Select, Modal, PageHeader
 } from 'antd';
-import { Content, Header } from 'antd/lib/layout/layout';
-import { ArrowLeftOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Content } from 'antd/lib/layout/layout';
 import React from 'react';
 import { levelList, servicesList } from '../../resources/PackageResource';
 import ServiceByClient from './ServiceByClient';
@@ -29,7 +28,10 @@ export default class ClientForm extends React.Component {
         servicesSelected: [],
         dateSelected: [],
         servicesList:[],
-        levelsList:[]
+        levelsList:[],
+        
+        showDeleteAlert: false,
+        content:''
     }
     componentDidMount() {
         this.getServices();
@@ -148,8 +150,11 @@ export default class ClientForm extends React.Component {
             updateClient(this.state.clientKey, model).then(
                 (jsonResponse) => {
                     if (jsonResponse.httpStatusCode !== 200) {
-                        console.log("ERROR")
+                        this.setState({ content: 'An error ocurred while saving a client. Please, try again.' })
+                        this.error()
                     } else {
+                        this.setState({ content: 'The client have been saved' })
+                        this.success();
                         this.getLevels();
                         this.clearData();
                     }
@@ -159,8 +164,11 @@ export default class ClientForm extends React.Component {
             saveClient(model).then(
                 (jsonResponse) => {
                     if (jsonResponse.httpStatusCode !== 200) {
-                        console.log("ERROR")
+                        this.setState({ content: 'An error ocurred while saving a client. Please, try again.' })
+                        this.error()
                     } else {
+                        this.setState({ content: 'The client have been saved' })
+                        this.success();
                         this.getLevels();
                         this.clearData();
                     }
@@ -199,6 +207,19 @@ export default class ClientForm extends React.Component {
             clientComment: '',
             clientAddress: ''
         })
+    }
+    success = () => {
+        Modal.success({
+            title: 'Success',
+            content: this.state.content,
+        });
+    }
+
+    error = () => {
+        Modal.error({
+            title: 'Error',
+            content: this.state.content,
+        });
     }
     render() {
         return (

@@ -1,16 +1,19 @@
 import React from 'react';
 
-import { Button, Input, Layout, Form, Row, Col,PageHeader } from 'antd';
+import { Button, Input, Layout, Form, Row, Col,PageHeader,Modal } from 'antd';
 import DynamicTable from '../../shared/DynamicTable';
 import { deleteServiceByID, getServices, saveService, updateService } from '../../networking/NetworkingService';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
+let objService = null;
 export default class ServicesScreen extends React.Component {
     formRef = React.createRef();
     state = {
         keyService: 0,
         serviceName: '',
-        services:[]
+        services:[],
+        showDeleteAlert: false,
+        content:''
     }
     componentDidMount(){
         this.getServices();
@@ -20,17 +23,8 @@ export default class ServicesScreen extends React.Component {
         this.setState({ keyService: obj.key, serviceName: obj.Name })
     }
     handleDeleteClick = (obj) => {
-        if (obj.key > 0) {
-            deleteServiceByID(obj.key).then(
-                (jsonResponse) => {
-                    if (jsonResponse.httpStatusCode !== 200) {
-                        console.log("ERROR")
-                    } else {
-                        this.getServices();
-                    }
-                }
-            )
-        }
+        objService = obj;
+        this.setState({showDeleteAlert:true})
     }
     handleBackClick = () => {
         this.setState({ clientForm: false })
@@ -65,8 +59,11 @@ export default class ServicesScreen extends React.Component {
             updateService(this.state.keyService, model).then(
                 (jsonResponse) => {
                     if (jsonResponse.httpStatusCode !== 200) {
-                        console.log("ERROR")
+                        this.setState({ content: 'An error ocurred while saving a service. Please, try again.' })
+                        this.error()
                     } else {
+                        this.setState({ content: 'The service have been saved' })
+                        this.success();
                         this.getServices();
                         this.ClearClick();
                     }
@@ -76,8 +73,11 @@ export default class ServicesScreen extends React.Component {
             saveService(model).then(
                 (jsonResponse) => {
                     if (jsonResponse.httpStatusCode !== 200) {
-                        console.log("ERROR")
+                        this.setState({ content: 'An error ocurred while saving a service. Please, try again.' })
+                        this.error()
                     } else {
+                        this.setState({ content: 'The service have been saved' })
+                        this.success();
                         this.getServices();
                         this.ClearClick();
                     }
@@ -88,6 +88,38 @@ export default class ServicesScreen extends React.Component {
     ClearClick = () => {
         this.formRef.current.setFieldsValue({ keyService: 0, serviceName: ' ' })
         this.setState({ keyService: 0, serviceName: 0 })
+    }
+    yesDelete = () => {
+        if (objService != null && objService.key > 0) {
+            deleteServiceByID(objService.key).then(
+                (jsonResponse) => {
+                    if (jsonResponse.httpStatusCode !== 200) {
+                        this.setState({ content: 'An error ocurred while delete a service. Please, try again.' })
+                        this.error()
+                    } else {
+                        this.setState({ content: 'The service have been deleted',showDeleteAlert: false })
+                        this.getServices();
+                        this.success();
+                    }
+                }
+            )
+        }
+    }
+    closeDeleteAlert = () => {
+        this.setState({ showDeleteAlert: false })
+    }
+    success = () => {
+        Modal.success({
+            title: 'Success',
+            content: this.state.content,
+        });
+    }
+
+    error = () => {
+        Modal.error({
+            title: 'Error',
+            content: this.state.content,
+        });
     }
     render() {
         let clientScreen = (<div>
@@ -154,6 +186,15 @@ export default class ServicesScreen extends React.Component {
                     clickFunction={this.handleRowClick.bind(this)}
                 />
             </Content>
+            {/*----------FOR DELETE-----------*/}
+            <Modal
+                title="Are you sure you want to delete this service?"
+                visible={this.state.showDeleteAlert}
+                onOk={this.yesDelete}
+                onCancel={this.closeDeleteAlert}
+                okText="Yes"
+                cancelText="No"
+            ><p>This action can not be undone.</p></Modal>
         </div>);
 
         return clientScreen

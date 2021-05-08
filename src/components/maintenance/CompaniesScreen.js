@@ -2,35 +2,35 @@ import React from 'react';
 
 import { Button, Layout, PageHeader,Modal } from 'antd';
 import DynamicTable from '../../shared/DynamicTable';
-import ClientForm from './ClientForm';
+import CompanyForm from './CompanyForm';
 import { UserAddOutlined } from '@ant-design/icons';
-import { deleteClientByID, getClients } from '../../networking/NetworkingClient';
+import { deleteCompanyByID, getCompanys } from '../../networking/NetworkingCompany';
 import { formatDate } from '../../helpers/FormatHelper';
 
 const { Content } = Layout;
-let objClient = null;
-export default class ClientsScreen extends React.Component {
+let objCompany = null;
+export default class CompaniesScreen extends React.Component {
     state = {
-        clientForm: false,
-        client: null,
-        keyClient: 1,
-        clientsList:[],
+        companyForm: false,
+        company: null,
+        keyCompany: 1,
+        companysList:[],
         content:''
     }
     componentDidMount() {
-        this.updateClients();
+        this.updateCompanys();
     }
-    updateClients = ()=>{
-        getClients().then(
+    updateCompanys = ()=>{
+        /* getCompanys().then(
             (jsonResponse) => {
                 if (jsonResponse != null) {
                     let helper = [];
-                    let servicesTags=[], clientServices = [];
-                    //level: {clients: [],id: 1,name: "Beginners"}
+                    let servicesTags=[], companyServices = [];
+                    //level: {companys: [],id: 1,name: "Beginners"}
                     jsonResponse.forEach(element => {
-                        if (element.clientServices.length > 0) {
-                            element.clientServices.forEach(items => {
-                                clientServices.push({ 'Value': items.service.id, 'Service Name': items.service.name, 'Date': formatDate(items.date) })
+                        if (element.companyServices.length > 0) {
+                            element.companyServices.forEach(items => {
+                                companyServices.push({ 'Value': items.service.id, 'Service Name': items.service.name, 'Date': formatDate(items.date) })
                                 servicesTags.push(items.service.name)
                             })
                         }
@@ -40,7 +40,7 @@ export default class ClientsScreen extends React.Component {
                             TELEPHONE: element.telephone,
                             EMAIL: element.email,
                             SERVICES: servicesTags,
-                            SERVICE: clientServices,
+                            SERVICE: companyServices,
                             LEVELID: element.levelId,
                             LEVEL: element.level.name,
                             FOUND: element.found,
@@ -49,35 +49,35 @@ export default class ClientsScreen extends React.Component {
                             COMMENTS: element.comments,
                         })
                     });
-                    this.setState({ clientsList: helper })
+                    this.setState({ companysList: helper })
                 }
             }
-        )
+        ) */
     }
     handleRowClick = (obj) => {
-        this.setState({ clientForm: true, client: obj })
+        this.setState({ companyForm: true, company: obj })
     }
     handleDeleteClick = (obj) => {
-        objClient = obj
+        objCompany = obj
         this.setState({ showDeleteAlert: true })
     }
     handleBackClick = () => {
-        this.updateClients();
-        this.setState({ clientForm: false })
+        this.updateCompanys();
+        this.setState({ companyForm: false })
     }
-    NewClientClick = () => {
-        this.setState({ clientForm: true, client: null, keyClient: 0 })
+    NewCompanyClick = () => {
+        this.setState({ companyForm: true, company: null, keyCompany: 0 })
     }
     yesDelete = () => {
-        if (objClient != null && objClient.KEY > 0) {
-            deleteClientByID(objClient.KEY).then(
+        if (objCompany != null && objCompany.KEY > 0) {
+            deleteCompanyByID(objCompany.KEY).then(
                 (jsonResponse) => {
                     if (jsonResponse.httpStatusCode !== 200) {
-                        this.setState({ content: 'An error ocurred while delete a client. Please, try again.' })
+                        this.setState({ content: 'An error ocurred while delete a company. Please, try again.' })
                         this.error()
                     } else {
-                        this.setState({ content: 'The client have been deleted', showDeleteAlert: false })
-                        this.updateClients();
+                        this.setState({ content: 'The company have been deleted', showDeleteAlert: false })
+                        this.updateCompanys();
                         this.success();
                     }
                 }
@@ -101,13 +101,13 @@ export default class ClientsScreen extends React.Component {
         });
     }
     render() {
-        let clientScreen = (<div>
+        let companyScreen = (<div>
             <PageHeader
                 className="site-page-header site-layout-background"
-                title="Clients"
+                title="Companys"
                 extra={[
-                    <Button style={{ marginLeft: '5px' }} type="primary" icon={<UserAddOutlined />} onClick={this.NewClientClick}>
-                        New Client
+                    <Button style={{ marginLeft: '5px' }} type="primary" icon={<UserAddOutlined />} onClick={this.NewCompanyClick}>
+                        New Company
                     </Button>
                 ]}
             />
@@ -120,9 +120,9 @@ export default class ClientsScreen extends React.Component {
                 }}
             >
                 <DynamicTable
-                    id="clients-table"
-                    hiddenHeaders={['KEY','LEVELID','SERVICE', 'TELEPHONE', 'FOUND', 'CITY', 'ADDRESS', 'COMMENTS']}
-                    data={this.state.clientsList}
+                    id="companys-table"
+                    //hiddenHeaders={['KEY','LEVELID','SERVICE', 'TELEPHONE', 'FOUND', 'CITY', 'ADDRESS', 'COMMENTS']}
+                    data={this.state.companysList}
                     enableClick={true}
                     useCheckBox={false}
                     useDeleteButton={true}
@@ -132,7 +132,7 @@ export default class ClientsScreen extends React.Component {
             </Content>
             {/*----------FOR DELETE-----------*/}
             <Modal
-                title="Are you sure you want to delete this client?"
+                title="Are you sure you want to delete this company?"
                 visible={this.state.showDeleteAlert}
                 onOk={this.yesDelete}
                 onCancel={this.closeDeleteAlert}
@@ -140,10 +140,10 @@ export default class ClientsScreen extends React.Component {
                 cancelText="No"
             ><p>This action can not be undone.</p></Modal>
         </div>);
-        if (this.state.clientForm) {
-            clientScreen = <ClientForm returnClick={this.handleBackClick} clientObj={this.state.client} keyClient={this.state.keyClient} />
+        if (this.state.companyForm) {
+            companyScreen = <CompanyForm returnClick={this.handleBackClick} companyObj={this.state.company} keyCompany={this.state.keyCompany} />
         }
 
-        return clientScreen
+        return companyScreen
     }
 }

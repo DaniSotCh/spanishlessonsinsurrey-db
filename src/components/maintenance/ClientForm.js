@@ -14,7 +14,7 @@ const { Option } = Select;
 export default class ClientForm extends React.Component {
     formRef = React.createRef();
     state = {
-        serviceList: servicesList(),
+        //serviceList: servicesList(),
         //Form Values
         clientKey:0,
         clientName: '',
@@ -31,7 +31,9 @@ export default class ClientForm extends React.Component {
         levelsList:[],
         
         showDeleteAlert: false,
-        content:''
+        content:'',
+        servicesByClient:[],
+        servicesByClientSave:[]
     }
     componentDidMount() {
         this.getServices();
@@ -47,6 +49,7 @@ export default class ClientForm extends React.Component {
                 clientFound: this.props.clientObj.FOUND,
                 clientComment: this.props.clientObj.COMMENTS,
                 clientAddress: this.props.clientObj.ADDRESS,
+                servicesByClient:this.props.clientObj.SERVICE
             });
             this.formRef.current.setFieldsValue({
                 clientKey:this.props.clientObj.KEY,
@@ -58,6 +61,7 @@ export default class ClientForm extends React.Component {
                 clientFound: this.props.clientObj.FOUND,
                 clientComment: this.props.clientObj.COMMENTS,
                 clientAddress: this.props.clientObj.ADDRESS,
+                servicesByClient:this.props.clientObj.SERVICE
             })
         }
     }
@@ -107,7 +111,7 @@ export default class ClientForm extends React.Component {
         this.setState({ clientCity: event.target.value })
     }
     handleLevelChange = (value) => {
-        this.setState({ levelValue: value })
+        this.setState({ levelValue: value.value })
     }
     handleClientFoundChange = (event) => {
         this.setState({ clientFound: event.target.value })
@@ -139,7 +143,7 @@ export default class ClientForm extends React.Component {
             Name: this.state.clientName,
             Telephone: this.state.telephone,
             Email: this.state.clientEmail,
-            Services: [],
+            ClientServices: this.state.servicesByClientSave,
             LevelId: this.state.levelValue,
             Found: this.state.clientFound,
             City: this.state.clientCity,
@@ -156,7 +160,6 @@ export default class ClientForm extends React.Component {
                         this.setState({ content: 'The client have been saved' })
                         this.success();
                         this.getLevels();
-                        this.clearData();
                     }
                 }
             )
@@ -170,7 +173,6 @@ export default class ClientForm extends React.Component {
                         this.setState({ content: 'The client have been saved' })
                         this.success();
                         this.getLevels();
-                        this.clearData();
                     }
                 }
             )
@@ -220,6 +222,9 @@ export default class ClientForm extends React.Component {
             title: 'Error',
             content: this.state.content,
         });
+    }
+    addServicesByClient = (obj, objSave) => {
+        this.setState({ servicesByClient: obj, servicesByClientSave: objSave })
     }
     render() {
         return (
@@ -301,6 +306,7 @@ export default class ClientForm extends React.Component {
                                     <Col span={12}>
                                         <Form.Item name="levelValue" label="Level">
                                             <TreeSelect
+                                            labelInValue={true}
                                                 placeholder="Select a level"
                                                 treeData={this.state.levelsList}
                                                 value={this.state.levelValue}
@@ -335,69 +341,14 @@ export default class ClientForm extends React.Component {
                                         </Form.Item>
                                     </Col>
                                 </Row>
-                                {/* <Row>
-                                    <Col span={12}>
-                                        <Form.List name="serviceList">
-                                            {(fields, { add, remove }) => (
-                                                <>
-                                                    {fields.map(field => (
-                                                        <Row>
-                                                            <Col span={12}>
-                                                                <Form.Item
-                                                                    noStyle
-                                                                    shouldUpdate={(prevValues, curValues) =>
-                                                                        prevValues.area !== curValues.area || prevValues.serviceList !== curValues.serviceList
-                                                                    }>
-                                                                    {() => (
-                                                                        <Form.Item
-                                                                            {...field}
-                                                                            label="Service"
-                                                                            name={[field.name, 'serviceList']}
-                                                                            fieldKey={[field.fieldKey, 'serviceList']}
-                                                                            rules={[{ required: true, message: 'Missing service' }]}
-                                                                        >
-                                                                            <Select
-                                                                                //disabled={!this.formRef.current.getFieldValue('area')}
-                                                                                //style={{ width: 130 }}
-                                                                                placeholder="Select a service"
-                                                                                onChange={this.handleServiceChange}>
-                                                                                {(this.state.serviceList).map(item => (
-                                                                                    <Option key={field.key} value={item.value}>
-                                                                                        {item.value}
-                                                                                    </Option>
-                                                                                ))}
-                                                                            </Select>
-                                                                        </Form.Item>
-                                                                    )}
-                                                                </Form.Item>
-                                                            </Col>
-                                                            <Col span={12}>
-                                                                <Form.Item
-                                                                    {...field}
-                                                                    label="Date"
-                                                                    name={[field.name, 'date']}
-                                                                    fieldKey={[field.fieldKey, 'date']}
-                                                                    rules={[{ required: true, message: 'Missing date' }]}
-                                                                >
-                                                                    <DatePicker className="w-75" onChange={this.handleServiceDateChange.bind(this, field.key)} />
-                                                                    <MinusCircleOutlined style={{ marginLeft: '5px', marginRight: '5px' }} onClick={() => remove(field.name)} />
-                                                                </Form.Item>
-                                                            </Col>
-                                                        </Row>
-                                                    ))}
-                                                    <Form.Item>
-                                                        <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                                                            Add a Service
-                                                </Button>
-                                                    </Form.Item>
-                                                </>
-                                            )}
-                                        </Form.List>
-                                    </Col>
-                                </Row> */}
                             </Col>
 
-                            <ServiceByClient clientName={this.props.clientObj != null ? this.props.clientObj.NAME : ''} />
+                            <ServiceByClient
+                                clientName={this.props.clientObj != null ? this.props.clientObj.NAME : ''}
+                                servicesList={this.state.servicesList}
+                                servicesByClient={this.state.servicesByClient}
+                                addServicesByClient={this.addServicesByClient}
+                            />
                         </Row>
                         {/* <Form.Item label="DatePicker">
                             <DatePicker />

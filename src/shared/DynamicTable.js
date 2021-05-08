@@ -85,7 +85,7 @@ export default class DynamicTable extends React.Component {
                                 break;
                             }
                         }
-                        if (value === 'SERVICE') {
+                        if (value === 'SERVICES') {
                             columns.push({
                                 title: value,
                                 dataIndex: value,

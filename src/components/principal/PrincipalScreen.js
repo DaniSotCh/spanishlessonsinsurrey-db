@@ -2,6 +2,7 @@ import React from 'react';
 import { Layout, Menu } from 'antd';
 import {
     UsergroupAddOutlined,
+    ContainerOutlined,
     SettingOutlined
 } from '@ant-design/icons';
 import logoRedondo from '../../images/SLS - logo redondo.png';
@@ -9,14 +10,15 @@ import ClientsScreen from '../maintenance/ClientsScreen';
 import ServicesScreen from '../maintenance/ServicesScreen';
 import SubMenu from 'antd/lib/menu/SubMenu';
 import LevelsScreen from '../maintenance/LevelsScreen';
+import CompaniesScreen from '../maintenance/CompaniesScreen';
 
 const { Sider } = Layout;
 
 export default class PrincipalScreen extends React.Component {
     state = {
-        collapsed:false,
+        collapsed:true,
         menuSelected:1,
-        widthCollap:200
+        widthCollap:80
     };
     onCollapse = (collapsed) => {
         var num = collapsed ? 80 : 200;
@@ -32,15 +34,18 @@ export default class PrincipalScreen extends React.Component {
                 screen = <ClientsScreen />;
                 break;
             case 2:
-                screen = <ServicesScreen />;
+                screen = <CompaniesScreen />;
                 break;
             case 3:
+                screen = <ServicesScreen />;
+                break;
+            case 4:
                 screen = <LevelsScreen />;
                 break;
             default:
                 break;
         }
-            let collapsed = this.state.collapsed;
+        let collapsed = this.state.collapsed;
         return (
             <Layout style={{ minHeight: '100vh' }}>
                 <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}style={{position: 'fixed',minHeight: '100vh'}}>
@@ -49,9 +54,12 @@ export default class PrincipalScreen extends React.Component {
                         <Menu.Item key="1" icon={<UsergroupAddOutlined />} onClick={this.menuClick.bind(this, 1)}>
                             Clients
                         </Menu.Item>
+                        <Menu.Item key="2" icon={<ContainerOutlined />} onClick={this.menuClick.bind(this, 2)}>
+                            Companies
+                        </Menu.Item>
                         <SubMenu key="sub1" icon={<SettingOutlined />} title="Maintenance">
-                            <Menu.Item key="2" onClick={this.menuClick.bind(this, 2)}>Services</Menu.Item>
-                            <Menu.Item key="3" onClick={this.menuClick.bind(this, 3)}>Levels</Menu.Item>
+                            <Menu.Item key="3" onClick={this.menuClick.bind(this, 3)}>Services</Menu.Item>
+                            <Menu.Item key="4" onClick={this.menuClick.bind(this, 4)}>Levels</Menu.Item>
                         </SubMenu>
                     </Menu>
                 </Sider>

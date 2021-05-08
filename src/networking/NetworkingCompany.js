@@ -5,15 +5,15 @@ export const getCompanyByID = async (companyID) => {
         const params = {
             'id': companyID
         };
-        const response = await genericGetWithParameters('Companys', params);
+        const response = await genericGetWithParameters('Companies', params);
         return response;
     } catch (error) {
         console.error(error);
     }
 }
-export const getCompanys = async () => {
+export const getCompanies = async () => {
     try {
-        const response = await genericGetNoParameters('Companys');
+        const response = await genericGetNoParameters('Companies');
         return response;
     } catch (error) {
         console.error(error);
@@ -22,7 +22,7 @@ export const getCompanys = async () => {
 
 export const deleteCompanyByID = async (companyID) => {
     try {
-        const response = await genericDeleteNoParameters('Companys', companyID);
+        const response = await genericDeleteNoParameters('Companies', companyID);
         return response;
     } catch (error) {
         console.error(error);
@@ -30,13 +30,13 @@ export const deleteCompanyByID = async (companyID) => {
 }
 export async function saveCompany(model) {
     var method = 'POST';
-    var apiName = 'Companys/';
+    var apiName = 'Companies/';
     let response = await genericCallWithBody(method, apiName, model);
     return response;
 }
 export async function updateCompany(id, model) {
     var method = 'PUT';
-    var apiName = 'Companys/' + id;
+    var apiName = 'Companies/' + id;
     let response = await genericCallWithBody(method, apiName, model);
     return response;
 }

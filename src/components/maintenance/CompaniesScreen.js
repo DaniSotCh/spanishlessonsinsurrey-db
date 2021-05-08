@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { Button, Layout, PageHeader,Modal } from 'antd';
+import { Button, Layout, PageHeader, Modal } from 'antd';
 import DynamicTable from '../../shared/DynamicTable';
 import CompanyForm from './CompanyForm';
 import { UserAddOutlined } from '@ant-design/icons';
-import { deleteCompanyByID, getCompanys } from '../../networking/NetworkingCompany';
+import { deleteCompanyByID, getCompanies } from '../../networking/NetworkingCompany';
 import { formatDate } from '../../helpers/FormatHelper';
 
 const { Content } = Layout;
@@ -14,45 +14,38 @@ export default class CompaniesScreen extends React.Component {
         companyForm: false,
         company: null,
         keyCompany: 1,
-        companysList:[],
-        content:''
+        companysList: [],
+        content: ''
     }
     componentDidMount() {
-        this.updateCompanys();
+        this.updateCompanies();
     }
-    updateCompanys = ()=>{
-        /* getCompanys().then(
+    updateCompanies = () => {
+        getCompanies().then(
             (jsonResponse) => {
                 if (jsonResponse != null) {
                     let helper = [];
-                    let servicesTags=[], companyServices = [];
-                    //level: {companys: [],id: 1,name: "Beginners"}
                     jsonResponse.forEach(element => {
-                        if (element.companyServices.length > 0) {
-                            element.companyServices.forEach(items => {
-                                companyServices.push({ 'Value': items.service.id, 'Service Name': items.service.name, 'Date': formatDate(items.date) })
-                                servicesTags.push(items.service.name)
-                            })
-                        }
                         helper.push({
                             KEY: element.id,
-                            NAME: element.name,
-                            TELEPHONE: element.telephone,
-                            EMAIL: element.email,
-                            SERVICES: servicesTags,
-                            SERVICE: companyServices,
-                            LEVELID: element.levelId,
-                            LEVEL: element.level.name,
-                            FOUND: element.found,
-                            CITY: element.city,
-                            ADDRESS: element.address,
-                            COMMENTS: element.comments,
+                            'COMPANY NAME': element.name != null ? element.name : '',
+                            REPRESENTATIVE: element.representative != null ? element.representative : '',
+                            POSITION: element.position != null ? element.position : '',
+                            TELEPHONE: element.telephone != null ? element.telephone : '',
+                            POSTALCODE: element.postcode != null ? element.postcode : '',
+                            EMAIL: element.email != null ? element.email : '',
+                            SERVICE: element.service != null ? element.service : '',
+                            FOUND: element.found != null ? element.found : '',
+                            DATE: element.date != null ? formatDate(element.date) : '',
+                            CITY: element.city != null ? element.city : '',
+                            ADDRESS: element.address != null ? element.address : '',
+                            COMMENTS: element.comments != null ? element.comments : '',
                         })
                     });
                     this.setState({ companysList: helper })
                 }
             }
-        ) */
+        )
     }
     handleRowClick = (obj) => {
         this.setState({ companyForm: true, company: obj })
@@ -62,7 +55,7 @@ export default class CompaniesScreen extends React.Component {
         this.setState({ showDeleteAlert: true })
     }
     handleBackClick = () => {
-        this.updateCompanys();
+        this.updateCompanies();
         this.setState({ companyForm: false })
     }
     NewCompanyClick = () => {
@@ -77,7 +70,7 @@ export default class CompaniesScreen extends React.Component {
                         this.error()
                     } else {
                         this.setState({ content: 'The company have been deleted', showDeleteAlert: false })
-                        this.updateCompanys();
+                        this.updateCompanies();
                         this.success();
                     }
                 }
@@ -104,7 +97,7 @@ export default class CompaniesScreen extends React.Component {
         let companyScreen = (<div>
             <PageHeader
                 className="site-page-header site-layout-background"
-                title="Companys"
+                title="Companies"
                 extra={[
                     <Button style={{ marginLeft: '5px' }} type="primary" icon={<UserAddOutlined />} onClick={this.NewCompanyClick}>
                         New Company
@@ -121,7 +114,7 @@ export default class CompaniesScreen extends React.Component {
             >
                 <DynamicTable
                     id="companys-table"
-                    //hiddenHeaders={['KEY','LEVELID','SERVICE', 'TELEPHONE', 'FOUND', 'CITY', 'ADDRESS', 'COMMENTS']}
+                    hiddenHeaders={['KEY', 'POSITION', 'FOUND', 'CITY', 'POSTALCODE', 'ADDRESS', 'COMMENTS', 'DATE', 'CITY', 'ADDRESS', 'COMMENTS']}
                     data={this.state.companysList}
                     enableClick={true}
                     useCheckBox={false}

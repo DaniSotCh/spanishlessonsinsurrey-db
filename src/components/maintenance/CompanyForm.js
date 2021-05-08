@@ -3,13 +3,13 @@ import {
 } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
 import React from 'react';
-import { getLevels } from '../../networking/NetworkingLevel';
-import { getServices } from '../../networking/NetworkingService';
 import { saveCompany, updateCompany } from '../../networking/NetworkingCompany';
+import moment from 'moment';
 
 const { TextArea } = Input;
+const dateFormat = "YYYY-MM-DD";
 export default class CompanyForm extends React.Component {
-    formRef = React.createRef();
+    formRefCompany = React.createRef();
     state = {
         //serviceList: servicesList(),
         //Form Values
@@ -18,85 +18,60 @@ export default class CompanyForm extends React.Component {
         companyEmail: '',
         telephone: '',
         companyCity: '',
-        levelValue: '',
         companyFound: '',
         companyComment: '',
         companyAddress: '',
-        servicesSelected: [],
-        dateSelected: [],
-        servicesList: [],
-        levelsList: [],
+        companyService: '',
+        companyPostalCode: '',
+        companyDate: moment(),
+        position: '',
+        representative: '',
 
         showDeleteAlert: false,
-        content: '',
-        servicesByCompany: [],
-        servicesByCompanySave: []
+        content: ''
     }
     componentDidMount() {
-        this.getServices();
-        this.getLevels();
         if (this.props.companyObj != null) {
             this.setState({
                 companyKey: this.props.companyObj.KEY,
-                companyName: this.props.companyObj.NAME,
+                companyName: this.props.companyObj['COMPANY NAME'],
                 companyEmail: this.props.companyObj.EMAIL,
                 telephone: this.props.companyObj.TELEPHONE,
                 companyCity: this.props.companyObj.CITY,
-                levelValue: this.props.companyObj.LEVELID,
                 companyFound: this.props.companyObj.FOUND,
                 companyComment: this.props.companyObj.COMMENTS,
                 companyAddress: this.props.companyObj.ADDRESS,
-                servicesByCompany: this.props.companyObj.SERVICE
+                companyService: this.props.companyObj.SERVICE,
+                companyPostalCode: this.props.companyObj.POSTALCODE,
+                companyDate: moment(this.props.companyObj.DATE),
+                position: this.props.companyObj.POSITION,
+                representative: this.props.companyObj.REPRESENTATIVE,
             });
-            this.formRef.current.setFieldsValue({
+            this.formRefCompany.current.setFieldsValue({
                 companyKey: this.props.companyObj.KEY,
-                companyName: this.props.companyObj.NAME,
+                companyName: this.props.companyObj['COMPANY NAME'],
                 companyEmail: this.props.companyObj.EMAIL,
                 telephone: this.props.companyObj.TELEPHONE,
                 companyCity: this.props.companyObj.CITY,
-                levelValue: this.props.companyObj.LEVELID,
                 companyFound: this.props.companyObj.FOUND,
                 companyComment: this.props.companyObj.COMMENTS,
                 companyAddress: this.props.companyObj.ADDRESS,
-                servicesByCompany: this.props.companyObj.SERVICE
+                companyService: this.props.companyObj.SERVICE,
+                companyPostalCode: this.props.companyObj.POSTALCODE,
+                companyDate: moment(this.props.companyObj.DATE),
+                position: this.props.companyObj.POSITION,
+                representative: this.props.companyObj.REPRESENTATIVE,
             })
         }
     }
-
-    getServices = () => {
-        getServices().then(
-            (json) => {
-                if (json != null) {
-                    let helper = [];
-                    json.forEach(element => {
-                        helper.push({
-                            value: element.id,
-                            title: element.name
-                        })
-                    });
-                    this.setState({ servicesList: helper })
-                }
-            }
-        )
-    }
-    getLevels = () => {
-        getLevels().then(
-            (json) => {
-                if (json != null) {
-                    let helper = [];
-                    json.forEach(element => {
-                        helper.push({
-                            value: element.id,
-                            title: element.name
-                        })
-                    });
-                    this.setState({ levelsList: helper })
-                }
-            }
-        )
-    }
     handleCompanyNameChange = (event) => {
         this.setState({ companyName: event.target.value })
+    }
+    handlePositionChange = (event) => {
+        this.setState({ position: event.target.value })
+    }
+    handleRepresentativeChange = (event) => {
+        this.setState({ representative: event.target.value })
     }
     handleCompanyEmailChange = (event) => {
         this.setState({ companyEmail: event.target.value })
@@ -107,8 +82,11 @@ export default class CompanyForm extends React.Component {
     handleCompanyCityChange = (event) => {
         this.setState({ companyCity: event.target.value })
     }
-    handleLevelChange = (value) => {
-        this.setState({ levelValue: value.value })
+    handleCompanyServiceChange = (event) => {
+        this.setState({ companyService: event.target.value })
+    }
+    handleCompanyPostalCodeChange = (event) => {
+        this.setState({ companyPostalCode: event.target.value })
     }
     handleCompanyFoundChange = (event) => {
         this.setState({ companyFound: event.target.value })
@@ -119,17 +97,22 @@ export default class CompanyForm extends React.Component {
     handleCompanyAddressChange = (event) => {
         this.setState({ companyAddress: event.target.value })
     }
+    handleCompanyDateChange = (companyDate, dateString) => {
+        this.setState({ companyDate: dateString })
+    }
     SaveClick = () => {
         let model = {
             Name: this.state.companyName,
-            Telephone: this.state.telephone,
+            Representative: this.state.representative,
+            Position: this.state.position,
             Email: this.state.companyEmail,
-            CompanyServices: this.state.servicesByCompanySave,
-            LevelId: this.state.levelValue,
-            Found: this.state.companyFound,
-            City: this.state.companyCity,
+            Telephone: this.state.telephone,
+            Date: this.state.companyDate,
+            Service: this.state.companyService,
             Address: this.state.companyAddress,
-            Comments: this.state.companyComment,
+            City: this.state.companyCity,
+            Postcode: this.state.companyPostalCode,
+            Found: this.state.companyFound,
         }
         if (this.state.companyKey > 0) {
             updateCompany(this.state.companyKey, model).then(
@@ -140,7 +123,6 @@ export default class CompanyForm extends React.Component {
                     } else {
                         this.setState({ content: 'The company have been saved' })
                         this.success();
-                        this.getLevels();
                     }
                 }
             )
@@ -153,7 +135,6 @@ export default class CompanyForm extends React.Component {
                     } else {
                         this.setState({ content: 'The company have been saved' })
                         this.success();
-                        this.getLevels();
                     }
                 }
             )
@@ -164,31 +145,35 @@ export default class CompanyForm extends React.Component {
         this.props.returnClick();
     }
     clearData = () => {
-        this.formRef.current.setFieldsValue({
-            serviceList: [],
+        this.formRefCompany.current.setFieldsValue({
             //Form Values
             companyKey: 0,
             companyName: '',
             companyEmail: '',
             telephone: '',
             companyCity: '',
-            levelValue: '',
             companyFound: '',
             companyComment: '',
-            companyAddress: ''
+            companyAddress: '',
+            companyService: '',
+            companyPostalCode: '',
+            position: '',
+            representative: '',
         });
         this.setState({
-            serviceList: [],
             //Form Values
             companyKey: 0,
             companyName: '',
             companyEmail: '',
             telephone: '',
             companyCity: '',
-            levelValue: '',
             companyFound: '',
             companyComment: '',
-            companyAddress: ''
+            companyAddress: '',
+            companyService: '',
+            companyPostalCode: '',
+            position: '',
+            representative: '',
         })
     }
     success = () => {
@@ -210,7 +195,7 @@ export default class CompanyForm extends React.Component {
                 <PageHeader
                     className="site-page-header site-layout-background"
                     onBack={this.handleBack}
-                    title={this.props.companyObj != null ? this.props.companyObj.NAME : 'New Company'}
+                    title={this.props.companyObj != null ? this.props.companyObj['COMPANY NAME'] : 'New Company'}
                 />
                 <Content
                     className="site-layout-background"
@@ -220,7 +205,7 @@ export default class CompanyForm extends React.Component {
                         //minHeight: 670,
                     }}
                 >
-                    <Form ref={this.formRef} labelCol={{ span: 14 }} wrapperCol={{ span: 22 }} layout="vertical" initialValues={{ size: '10px' }} size={'middle'}>
+                    <Form ref={this.formRefCompany} labelCol={{ span: 14 }} wrapperCol={{ span: 22 }} layout="vertical" initialValues={{ size: '10px' }} size={'middle'}>
                         <Row>
                             <Col span={12}>
                                 <Form.Item
@@ -229,11 +214,10 @@ export default class CompanyForm extends React.Component {
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Please input your name',
+                                            message: 'Please input a company name',
                                         }
                                     ]}>
                                     <Input
-                                        //defaultValue={this.props.companyObj != null ? this.props.companyObj.NAME : ''}
                                         value={this.state.companyName}
                                         onChange={this.handleCompanyNameChange}
                                     />
@@ -246,11 +230,10 @@ export default class CompanyForm extends React.Component {
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Please input your name',
+                                            message: 'Please input a representative',
                                         }
                                     ]}>
                                     <Input
-                                        //defaultValue={this.props.companyObj != null ? this.props.companyObj.NAME : ''}
                                         value={this.state.representative}
                                         onChange={this.handleRepresentativeChange}
                                     />
@@ -265,11 +248,10 @@ export default class CompanyForm extends React.Component {
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Please input your name',
+                                            message: 'Please input a position',
                                         }
                                     ]}>
                                     <Input
-                                        //defaultValue={this.props.companyObj != null ? this.props.companyObj.NAME : ''}
                                         value={this.state.position}
                                         onChange={this.handlePositionChange}
                                     />
@@ -285,7 +267,6 @@ export default class CompanyForm extends React.Component {
                                         },
                                     ]}>
                                     <Input
-                                        //defaultValue={this.props.companyObj != null ? this.props.companyObj.EMAIL : ''}
                                         value={this.state.companyEmail}
                                         onChange={this.handleCompanyEmailChange}
                                     />
@@ -299,25 +280,32 @@ export default class CompanyForm extends React.Component {
                                     label="Telephone"
                                 >
                                     <Input
-                                        //defaultValue={this.props.companyObj != null ? this.props.companyObj.TELEPHONE : ''}
                                         value={this.state.telephone}
                                         onChange={this.handleTelephoneChange}
                                     />
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
-                                <Form.Item name="date" label="Date">
+                                <Form.Item
+                                    name="companyDate"
+                                    label="Date"
+                                >
                                     <DatePicker
                                         className="w-100"
-                                        value={this.state.date}
-                                        onChange={this.handleDateChange} />
+                                        format={dateFormat}
+                                        value={this.state.companyDate}
+                                        onChange={this.handleCompanyDateChange}
+                                    />
                                 </Form.Item>
                             </Col>
                         </Row>
 
                         <Row>
                             <Col span={12}>
-                                <Form.Item name="companyAddress" label="Address">
+                                <Form.Item
+                                    name="companyAddress"
+                                    label="Address"
+                                >
                                     <Input
                                         value={this.state.companyAddress}
                                         onChange={this.handleCompanyAddressChange}

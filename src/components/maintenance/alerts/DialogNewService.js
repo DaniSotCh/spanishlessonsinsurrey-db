@@ -2,6 +2,7 @@ import { Col, DatePicker,Form, Row, TreeSelect } from 'antd';
 import Modal from 'antd/lib/modal/Modal';
 import React from 'react';
 
+const dateFormat = 'YYYY/MM/DD';
 export default class DialogNewService extends React.Component {
     formRef = React.createRef();
     state = {
@@ -62,6 +63,7 @@ export default class DialogNewService extends React.Component {
                         <Col span={12}>
                             <Form.Item name="ServiceDate" label="Date">
                                 <DatePicker
+                                    format={dateFormat}
                                     className="w-100"
                                     value={this.state.ServiceDate}
                                     onChange={this.handleServiceDateChange} />

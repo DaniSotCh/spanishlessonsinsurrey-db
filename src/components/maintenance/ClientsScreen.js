@@ -100,6 +100,14 @@ export default class ClientsScreen extends React.Component {
             content: this.state.content,
         });
     }
+    getClientsList = async () => {
+        const json = await getClients();
+        if (json != null) {
+            return json;
+        } else {
+            return [];
+        }
+    }
     render() {
         let clientScreen = (<div>
             <PageHeader
@@ -128,6 +136,9 @@ export default class ClientsScreen extends React.Component {
                     useDeleteButton={true}
                     deleteFunction={this.handleDeleteClick.bind(this)}
                     clickFunction={this.handleRowClick.bind(this)}
+                    //enableSortByHeader={true}
+                    //useFilter={true}
+                    //filterFunction={this.getClientsList}
                 />
             </Content>
             {/*----------FOR DELETE-----------*/}

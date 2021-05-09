@@ -1,10 +1,9 @@
 import { Space, Table, Tag } from 'antd';
 import React from 'react';
 import { servicesList } from '../resources/PackageResource';
-//import TableFilter from './TableFilter';
-//import TheCSVButton from './TheCSVButton';
-
-
+import TableFilter from './TableFilter';
+import TheCSVButton from './TheCSVButton';
+import { FilterOutlined, StopOutlined } from '@ant-design/icons';
 
 export default class DynamicTable extends React.Component {
 
@@ -263,21 +262,38 @@ export default class DynamicTable extends React.Component {
 
         if (showFilter) {
             if (!this.state.filtering) {
-                filterButton.push(<i className="fa fa-fw fa-filter uk-align-right" key={"filter-icon" + id} onClick={this.onFilterButtonClick} style={{ fontSize: '1.50em', verticalAlign: 'middle', cursor: 'pointer', marginBottom: '2px', marginLeft: '10px' }} />);
+                filterButton.push(
+                    <FilterOutlined
+                        onClick={this.onFilterButtonClick}
+                        style={{
+                            fontSize: '1.50em',
+                            verticalAlign: 'middle',
+                            cursor: 'pointer',
+                            marginBottom: '2px',
+                            marginLeft: '10px'
+                        }}
+                    />
+                );
+
             } else {
-                filterButton.push(<i className="fa fa-fw fa-ban uk-align-right" key={"filter-icon" + id} onClick={this.clearFilterButtonClick} style={{ fontSize: '1.50em', verticalAlign: 'middle', cursor: 'pointer', marginBottom: '2px', marginLeft: '10px' }} />);
+                filterButton.push(
+                    <StopOutlined
+                        onClick={this.clearFilterButtonClick}
+                        style={{ fontSize: '1.50em', verticalAlign: 'middle', cursor: 'pointer', marginBottom: '2px', marginLeft: '10px' }}
+                    />
+                );
             }
         }
 
-        /* if(showExport){
+        if(showExport){
             filterButton.push(<TheCSVButton board={this.props.tableName} data={this.state.data} useIcon={true}/>);
-        } */
+        }
 
         return (
-            <div>{/* 
-                <div className="uk-overflow-auto">
+            <div>
+                <div style={{textAlign: 'right'}}>
                     {filterButton}
-                </div> */}
+                </div>
                 <Table
                     dataSource={[...dataSource]}
                     columns={columns}
@@ -290,12 +306,12 @@ export default class DynamicTable extends React.Component {
                     }}
                     size='small'
                 />
-                {/* <TableFilter 
+                <TableFilter 
                     open={this.state.filterScreen}
                     onClose={this.onCloseFilterScreen}
                     headers={filterHeaders}
                     runFilter={this.runFilter}
-                /> */}
+                />
             </div>
         );
     }
